@@ -1,4 +1,0 @@
-%main
-
-%start program
-Controller();
