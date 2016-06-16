@@ -2,7 +2,7 @@ classdef NeuroNeuer < handle
     
     properties
         servo
-        dvsread
+        dvs
         model
         gui
     end
@@ -12,7 +12,7 @@ classdef NeuroNeuer < handle
             %init Servo Control
             obj.servo = Servo();
             %init DVS
-            obj.dvsread = DVSread();
+            obj.dvs = DVS('COM3', 6000000);
             %init model
             obj.model = Model();
             %init gui
