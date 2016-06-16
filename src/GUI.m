@@ -1,11 +1,11 @@
-classdef Servo < handle
+classdef GUI < handle
     
     properties
         
     end
     
     methods
-        function obj = Servo()
+        function obj = GUI()
             
         end
     end

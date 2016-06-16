@@ -1,0 +1,14 @@
+classdef DVSfilter < handle
+%used to     
+    
+    properties
+        servo
+    end
+    
+    methods
+        function obj = NeuroNeuer()
+            
+        end
+    end
+    
+end
