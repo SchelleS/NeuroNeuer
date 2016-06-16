@@ -42,8 +42,8 @@ classdef DVS < handle
             %if at leat one response is complete
             %TODO: check if Bytes Availible is always multible of 4
             %makes problem when not 4 bytes are returned see Mode 'E1'
-            if (n>0)     
-                bytes2Read = n*4;
+            if (n>3)     
+                bytes2Read = floor(n/4)*4; % get a multible of 4
                 %TODO: For other modi g.E. 'E1'. Read all an buffer uncomplete 
                 eventBytes=obj.serial.Read(bytes2Read);
                 eventY=eventBytes(1:4:end);         % fetch every 2nd byte starting from 1st
