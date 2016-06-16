@@ -9,8 +9,8 @@ classdef NeuroNeuer < handle
     
     methods
         function obj = NeuroNeuer()
-            %close all serial ports
-                        
+            
+            
             %init Servo Control
             obj.servo = Servo();
             %init DVS
