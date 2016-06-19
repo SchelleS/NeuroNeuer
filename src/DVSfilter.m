@@ -4,8 +4,6 @@ classdef DVSfilter < handle
         % change if camera not aligned straight
         xmin
         xmax
-        ymin
-        ymax
         
         % cluster values
         epsilon
@@ -24,7 +22,7 @@ classdef DVSfilter < handle
         % deletes all elements beyond borders
         function filteredEvents = filterBorder(obj, events)
             % TODO implement border filter
-            filteredEvents = events;
+            filteredEvents = events(events(1) < obj.xmax & events(1) > obj.xmin);
         end
         
         

@@ -1,9 +1,8 @@
 classdef NeuroNeuer < handle
     
     properties
-        dvsPort
-        servoPort
         servo
+        dvsPort
         dvs
         filter
         model
@@ -13,7 +12,7 @@ classdef NeuroNeuer < handle
     methods
         
         function obj = NeuroNeuer()
-            % set serial port names here
+            % set serial port
             obj.dvsPort = 'COM3';
             obj.servoPort = 'COM4';
             
@@ -27,7 +26,7 @@ classdef NeuroNeuer < handle
             %init Servo Control
             obj.servo = Servo();
             %init DVS
-            obj.dvs = DVS(obj.dvsPort, 6000000);
+            obj.dvs = DVS(dvsPort, 6000000);
             %init filter
             obj.filter = DVSfilter(2, 10);
             %init model
