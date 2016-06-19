@@ -1,6 +1,5 @@
 classdef Model < handle
-% filtered data (position, velocity) in pixel is given to the model. Here
-% the calculations and controlling will happen
+% gets data and 
     properties
      
     end

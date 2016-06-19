@@ -1,0 +1,53 @@
+classdef DVSfilter < handle    
+    
+    properties
+        % change if camera not aligned straight
+        xmin
+        xmax
+        ymin
+        ymax
+        
+    end
+    
+    methods
+        
+        function obj = DVSfilter()
+            
+        end
+        
+        % deletes all elements beyond borders
+        function filteredEvents = filterBorder(obj, events)
+            
+        end
+        
+        
+        % calculate ball position
+        % may also return timestamp for velocity calculation
+        function [x, y] = getBallPosition()
+            
+            ballPos = [0, 0];
+            
+            % cluster radius
+            epsilon=2;
+            
+            % minimal number of points in range epsilon
+            MinPts=10;
+            
+            A=filteredData(filteredData(:,3)==1, 1:2);
+            IDX=DBSCAN(A,epsilon,MinPts);
+            clusterNumb = mode(IDX);
+            ballPos   = mean(A(IDX==clusterNumb, :));
+            ballVel = [0, 0];
+            epsilon=6;
+            MinPts=10;
+            A=filteredData(:, 1:2);
+            IDX=DBSCAN(A,epsilon,MinPts);
+            clusterNumb = mode(IDX);
+            ballPos1   = mean(A(IDX==clusterNumb, :));
+            ballVel = ballPos - ballPos1;
+            
+        end
+        
+    end
+    
+end

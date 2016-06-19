@@ -72,5 +72,11 @@ classdef DVS < handle
             disp('DVS128 reset');
         end
         
+        function disconnect(obj)
+            obj.serial.WriteLine('E-');                     
+            obj.serial.Close();                             
+            disp ('COM-Port closed');  
+        end
+        
     end
 end
