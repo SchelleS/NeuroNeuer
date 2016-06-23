@@ -22,23 +22,31 @@ classdef DVS < handle
             obj.reset();
             disp('DVS reset');
             
+            %baudrate
+            %obj.serial.WriteLine('!U=4000000'); 
+            
             %data format
             obj.serial.WriteLine('!E2');
             pause(0.1);
             obj.serial.Flush();
             disp('DVS timestamp enabled');
-            
+
             %start event sending
             obj.serial.WriteLine('E+');
+            %obj.serial.Flush();
             %dummy read 3 chars as reply
             obj.serial.Read(3);
             display('DVS started event streaming');
             
         end
         
-        function events = GetEvents(obj)  % get n events (=4*n bytes) from sensor
+        function dispEvents(obj)
+            disp(obj.serial.Read(1));
+        end
+        
+        function events = getEvents(obj)  % get n events (=4*n bytes) from sensor
             events = [];
-            n = EventsAvailable(obj);
+            n = eventsAvailable(obj);
             %if at leat one response is complete
             %TODO: check if Bytes Availible is always multible of 4
             %makes problem when not 4 bytes are returned see Mode 'E1'
@@ -60,7 +68,7 @@ classdef DVS < handle
             end % (n>3)
         end
         
-        function events = EventsAvailable(obj)
+        function events = eventsAvailable(obj)
             n=obj.serial.BytesAvailable();
             events = floor(n/4);
         end

@@ -1,11 +1,11 @@
-classdef Model < handle
-% gets data and 
+classdef GUI < handle
+    
     properties
-     
+        plt
     end
     
     methods
-        function obj = Model()
+        function obj = GUI()
             
         end
     end

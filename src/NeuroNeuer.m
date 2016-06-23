@@ -13,13 +13,18 @@ classdef NeuroNeuer < handle
     methods
         
         function obj = NeuroNeuer()
+            fclose(instrfind);
+            
             % set serial port names here
-            obj.dvsPort = 'COM3';
-            obj.servoPort = 'COM4';
+            obj.dvsPort = 'com9';
+            obj.servoPort = 'com4';
             
             %close all serial ports
             obj.init();        
-            %obj.connect();
+            obj.connect();
+            
+            % start main loop
+            obj.run()
         end
         
         % initialize servo and camera
@@ -42,7 +47,21 @@ classdef NeuroNeuer < handle
             %obj.servo.connect();
             
             % connect dvs
-            %obj.dvs.connect();
+            obj.dvs.connect();
+        end
+        
+        function run(obj)
+            % endless loop
+            while(1)
+                if(obj.dvs.eventsAvailable())
+                    events = obj.dvs.getEvents();
+                    %disp(events);
+                    obj.gui.update(events);
+                else
+                    disp('no events')
+                end
+                pause(0.0001)
+            end
         end
         
     end
