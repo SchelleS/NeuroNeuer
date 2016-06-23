@@ -8,6 +8,9 @@ classdef NeuroNeuer < handle
         filter
         model
         gui
+        millis_last
+        start1
+        start2
     end
     
     methods
@@ -25,6 +28,8 @@ classdef NeuroNeuer < handle
             
             % start main loop
             obj.run()
+            
+            obj.millis_last = now;
         end
         
         % initialize servo and camera
@@ -32,7 +37,7 @@ classdef NeuroNeuer < handle
             %init Servo Control
             obj.servo = Servo(obj.arduinoPort);
             %init DVS
-            obj.dvs = DVS(obj.dvsPort, 6000000);
+            obj.dvs = DVS(obj.dvsPort, 12000000);
             %init filter
             obj.filter = DVSfilter(2, 10);
             %init model
@@ -52,17 +57,33 @@ classdef NeuroNeuer < handle
         
         function run(obj)
             % endless loop
+            obj.start1 = tic;
+            obj.start2 = tic;
             while(1)
-                if(obj.dvs.eventsAvailable())
-                    events = obj.dvs.getEvents();
-                    %disp(events);
-                    obj.gui.update(events);
-                    %some servo stuff just for testing
-                    moveServoToPosition_value(obj.servo,rand);
-                else
-                    disp('no events')
+                elapsed = toc(obj.start1);
+                if(elapsed>=0.00001)
+                    obj.start1 = tic;
+                    
+                    if(obj.dvs.eventsAvailable())
+                        events = obj.dvs.getEvents();
+                        %disp(events);
+                        obj.gui.update(events);
+                        %some servo stuff just for testing
+                       
+                    else
+                         
+                        disp('no events')
+                    end
+                    
+                    %moveServoToPosition_value(obj.servo,rand);
+                    
+                    elapsed = toc(obj.start2);
+                    if(elapsed>=0.5)
+                        obj.start2 = tic;
+                        display('UPDATENEURONEUER')
+                    end
                 end
-                pause(0.0001)
+                pause(0.000000000000000000000001)
             end
         end
         

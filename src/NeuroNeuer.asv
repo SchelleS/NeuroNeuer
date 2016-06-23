@@ -2,13 +2,13 @@ classdef NeuroNeuer < handle
     
     properties
         dvsPort
-        servoPort
         arduinoPort
         servo
         dvs
         filter
         model
         gui
+        millis_last
     end
     
     methods
@@ -18,7 +18,7 @@ classdef NeuroNeuer < handle
             
             % set serial port names here
             obj.dvsPort = 'com7';
-            obj.servoPort = 'com4';
+            obj.arduinoPort = 'com6';
             
             %close all serial ports
             obj.init();        
@@ -26,12 +26,14 @@ classdef NeuroNeuer < handle
             
             % start main loop
             obj.run()
+            
+            obj.millis_last = now;
         end
         
         % initialize servo and camera
         function init(obj)
             %init Servo Control
-            obj.servo = Servo();
+            obj.servo = Servo(obj.arduinoPort);
             %init DVS
             obj.dvs = DVS(obj.dvsPort, 6000000);
             %init filter
@@ -54,14 +56,17 @@ classdef NeuroNeuer < handle
         function run(obj)
             % endless loop
             while(1)
+                if(millis_last)
                 if(obj.dvs.eventsAvailable())
                     events = obj.dvs.getEvents();
                     %disp(events);
                     obj.gui.update(events);
+                    %some servo stuff just for testing
+                    moveServoToPosition_value(obj.servo,rand);
                 else
                     disp('no events')
                 end
-                pause(0.0001)
+                %pause(0.0001)
             end
         end
         
