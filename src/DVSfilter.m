@@ -37,6 +37,7 @@ classdef DVSfilter < handle
             
             % run dbscan 'on ON' data
             A=filteredData(filteredData(:,3)==1, 1:2);
+            %A=filteredData(:, 1:2);
             IDX=DBSCAN(A, obj.epsilon, obj.minPts);
             clusterNumb = mode(IDX);
             ballPos = mean(A(IDX==clusterNumb, :));

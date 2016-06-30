@@ -24,11 +24,10 @@ classdef NeuroNeuer < handle
         function obj = NeuroNeuer()
             fclose(instrfind);
             
-            obj.dbrad = 1;
-            obj.dbcnt = 10;
-            obj.alpha = 0.1;
-            obj.minEvents = 40;
-            obj.buffSize = 50;
+            obj.dbrad = 2;
+            obj.dbcnt = 15;
+            obj.alpha = 0.5;
+            obj.buffSize = 400;
             
             % set serial port names here
             obj.dvsPort = 'com9';
@@ -36,7 +35,7 @@ classdef NeuroNeuer < handle
             
             obj.init();
             obj.connect();
-            
+                
             % start main loop
             obj.run()
             
@@ -78,7 +77,7 @@ classdef NeuroNeuer < handle
                 if(elapsed>=0.0000000000001)
                     obj.start1 = tic;
                     %display('very fast stuff')
-                    if(obj.dvs.eventsAvailable()>obj.minEvents)
+                    if(obj.dvs.eventsAvailable())
                         elapsed = tic - obj.start1;
                         events = obj.dvs.getEvents();
                         obj.buffer.Add(events)

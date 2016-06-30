@@ -7,6 +7,8 @@ classdef Model < handle
         newBallPos
         ballVel
         alpha
+        list
+        ballVelocityTemp
     end
     
     methods
@@ -17,6 +19,7 @@ classdef Model < handle
             obj.newBallPos = [-1, -1];
             obj.ballVel = [0, 0];
             obj.alpha = alpha;
+            obj.list = [0, 0];
         end
         
         function updateBallPositionAndVelocity(obj, events, elapsed)
@@ -27,16 +30,23 @@ classdef Model < handle
             else
                 %obj.newBallPos = (1 - obj.alpha)*obj.oldBallPos + obj.alpha*obj.filter.calculateBallPositionWithFilter(events);
                 obj.newBallPos = obj.filter.calculateBallPositionWithFilter(events);
-                obj.ballVel = (obj.newBallPos - obj.oldBallPos)/elapsed;
-                disp('ball velocity')
-                disp(obj.ballVel)
-                disp('obj.newBallPos')
-                disp(obj.newBallPos)
-                disp('obj.oldBallPos')
-                disp(obj.oldBallPos)
+                obj.ballVelocityTemp = (obj.newBallPos - obj.oldBallPos)/elapsed;
+                
+                obj.ballVel = obj.ballVelocityTemp;
+                
+%                 if length(obj.newBallPos) == 2 && length(obj.oldBallPos) == 2
+%                     obj.list = vertcat(obj.list , obj.ballVelocityTemp);
+% 
+%                     if(length(obj.list)>10)
+%                         obj.list=obj.list(2:end, :);
+%                     end
+%                     disp('IM HEREEEEEEEE')
+%                     obj.ballVel = mean(obj.list);
+%                 end
+                
+                obj.oldBallPos = obj.newBallPos;
             end
-            obj.oldBallPos = obj.newBallPos;
-            
+
         end
         
     end
