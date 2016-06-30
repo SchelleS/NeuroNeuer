@@ -21,6 +21,8 @@ classdef DVSfilter < handle
         
         function ballPos = calculateBallPositionWithFilter(obj, events)
             %filteredEvents = obj.filterBorder(events);
+            disp('size in calcposwithfilter');
+            disp(size(events))
             ballPos = obj.getBallPosition(events);
         end
         

@@ -46,7 +46,7 @@ classdef DVS < handle
         
         function events = getEvents(obj)  % get n events (=4*n bytes) from sensor
             events = [];
-            n = eventsAvailable(obj);
+            n = obj.eventsAvailable();
             %if at leat one response is complete
             %TODO: check if Bytes Availible is always multible of 4
             %makes problem when not 4 bytes are returned see Mode 'E1'

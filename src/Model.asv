@@ -27,7 +27,7 @@ classdef Model < handle
             else
                 %obj.newBallPos = (1 - obj.alpha)*obj.oldBallPos + obj.alpha*obj.filter.calculateBallPositionWithFilter(events);
                 obj.newBallPos = obj.filter.calculateBallPositionWithFilter(events);
-                obj.ballVel = (obj.newBallPos - obj.oldBallPos)/elapsed;
+                obj.ballVel = (obj.newBallPos - obj.oldBallPos)/elaps;
                 disp('ball velocity')
                 disp(obj.ballVel)
                 disp('obj.newBallPos')
@@ -35,7 +35,6 @@ classdef Model < handle
                 disp('obj.oldBallPos')
                 disp(obj.oldBallPos)
             end
-            obj.oldBallPos = obj.newBallPos;
             
         end
         
