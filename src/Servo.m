@@ -13,7 +13,7 @@ classdef Servo < handle
     methods
         function obj = Servo(comPort)
             display('init Arduino and Servo')
-            obj.arduino_board = arduino('Com6', 'Uno', 'Libraries', 'Servo');
+            obj.arduino_board = arduino(comPort, 'Uno', 'Libraries', 'Servo');
             obj.servo_motor = servo(obj.arduino_board,'D4','MinPulseDuration',9.00e-4,'MaxPulseDuration',2.1e-3);
             obj.pixelRandLinks = 0;%150
             obj.pixelrandRechts = 128;%50

@@ -3,6 +3,8 @@ classdef Model < handle
 % the calculations and controlling will happen
     properties
         filter
+        neuralNet
+        servo
         oldBallPos
         newBallPos
         ballVel
@@ -15,12 +17,18 @@ classdef Model < handle
         ballVelForPrediction
         ballPosForTarget
         ballVelForTarget
+        
+        positionPredicted
+        targetPredicted
     end
     
     methods
-        function obj = Model(dbrad, dbcnt, predictionLine, targetLine)
+        function obj = Model(dbrad, dbcnt, predictionLine, targetLine, ardPort)
             %init filter
             obj.filter = DVSfilter(dbrad, dbcnt);
+            obj.neuralNet = NeuralNetwork();
+            obj.servo = Servo(ardPort);
+            
             obj.oldBallPos = [-1, -1];
             obj.newBallPos = [-1, -1];
             obj.ballVel = [0, 0];
@@ -28,6 +36,7 @@ classdef Model < handle
             obj.predLine = predictionLine;
             obj.tarLine = targetLine;
             obj.eps = 5;
+            obj.positionPredicted = 0;
         end
         
         function updateBallPositionAndVelocity(obj, events, elapsed)
@@ -44,15 +53,41 @@ classdef Model < handle
                 
                 if length(obj.newBallPos) == 2 && length(obj.oldBallPos) == 2
                     
-                    if (obj.newBallPos(2) < obj.predLine + obj.eps) && (obj.newBallPos(2) > obj.predLine - obj.eps)
+                    if (obj.positionPredicted == 0 && obj.ballVel(2) > 0 && obj.newBallPos(2) < obj.predLine + obj.eps) && (obj.newBallPos(2) > obj.predLine - obj.eps)
                         obj.ballPosForPrediction = obj.newBallPos;
                         obj.ballVelForPrediction = obj.ballVel;
+                        obj.positionPredicted = 1;
+                        X = obj.ballPosForPrediction(1);
+                        Y = obj.ballPosForPrediction(2);
+                        dX = obj.ballVelForPrediction(1);
+                        dY = obj.ballVelForPrediction(2);
+                        
+                        disp(obj.neuralNet.getNumberTrained())
+                        if obj.neuralNet.getNumberTrained()>1
+                            pixel = obj.neuralNet.evaluate([X;Y;dX;dY]);
+                            obj.servo.moveServoToPosition_pixel(pixel);
+                            disp(pixel)
+                        end
+                        
                         %disp(obj.ballPosForPrediction)
                     end
                     
-                    if (obj.newBallPos(2) < obj.tarLine + obj.eps) && (obj.newBallPos(2) > obj.tarLine - obj.eps)
+                    if (obj.positionPredicted == 1 && obj.newBallPos(2) < obj.tarLine + obj.eps && obj.newBallPos(2) > obj.tarLine - obj.eps)
                         obj.ballPosForTarget = obj.newBallPos;
                         obj.ballVelForTarget = obj.ballVel;
+                        
+                        X = obj.ballPosForPrediction(1);
+                        Y = obj.ballPosForPrediction(2);
+                        dX = obj.ballVelForPrediction(1);
+                        dY = obj.ballVelForPrediction(2);
+                        
+                        dXTarget = obj.ballPosForTarget(1);
+                        
+                        obj.positionPredicted = 0;
+                        
+                        %add sample for training network
+                        obj.neuralNet.addSample(X, Y, dX, dY, dXTarget);
+                        obj.neuralNet.trainIt();
                         %disp(obj.ballPosForPrediction)
                     end
                     

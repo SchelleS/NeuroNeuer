@@ -41,7 +41,7 @@ classdef DVSfilter < handle
 %             if any(IDX == 2)
 %                 ballPos = -1
 %             else
-                disp(IDX)
+                %disp(IDX)
                 clusterNumb = 1;%mode(IDX);
                 ballPos = mean(A(IDX==clusterNumb, :));
 %             end

@@ -11,22 +11,23 @@ classdef NeuralNetwork < handle
     
     methods
         function obj = NeuralNetwork()
-            hiddenLayerSize = 100;
+            hiddenLayerSize = 10;
             obj.net = fitnet(hiddenLayerSize);
             obj.net = init(obj.net);
             
-            load 'NNinput.mat' input
-            load 'NNtarget.mat' target
+            load 'NNinput.mat' input;
+            load 'NNtarget.mat' target;
             obj.input = input;
             obj.target = target;
+            obj.trainIt();
         end
         function addSample(obj,X,Y,dX,dY,pixelNeuer)
             obj.input = [obj.input,[X;Y;dX;dY]];
             obj.target = [obj.target,pixelNeuer];
             input = obj.input;
             target = obj.target;
-            save 'NNinput.mat' input
-            save 'NNtarget.mat' target
+            save 'NNinput.mat' input;
+            save 'NNtarget.mat' target;
         end
         function trainIt(obj)% function name 
             %[obj.net] = adapt(obj.net,input,target);
@@ -35,6 +36,10 @@ classdef NeuralNetwork < handle
                 targetTrain = obj.target(2:end);
                 [obj.net] = train(obj.net,inputTrain,targetTrain); % eckige Klammer ?
             end
+        end
+        function numberTrained = getNumberTrained(obj)
+            numberTrained = length(obj.target);
+            
         end
         function output = evaluate(obj,inputs)
             [output] = sim(obj.net,inputs);

@@ -3,7 +3,6 @@ classdef NeuroNeuer < handle
     properties
         dvsPort
         arduinoPort
-        servo
         dvs
         buffer
         model
@@ -26,14 +25,14 @@ classdef NeuroNeuer < handle
         function obj = NeuroNeuer()
             fclose(instrfind);
             
-            obj.dbrad = 5;
+            obj.dbrad = 10;
             obj.dbcnt = 20;
-            obj.buffSize = 100;
+            obj.buffSize = 200;
             obj.predictionLine = 15;
             obj.targetLine = 120;
             
             % set serial port names here
-            obj.dvsPort = 'com9';
+            obj.dvsPort = 'com3';
             obj.arduinoPort = 'com10';
             
             obj.init();
@@ -53,7 +52,7 @@ classdef NeuroNeuer < handle
             obj.dvs = DVS(obj.dvsPort, 12000000);
             
             %init model
-            obj.model = Model(obj.dbrad, obj.dbcnt, obj.predictionLine, obj.targetLine);
+            obj.model = Model(obj.dbrad, obj.dbcnt, obj.predictionLine, obj.targetLine, obj.arduinoPort);
             %init gui
             obj.gui = GUI(obj.predictionLine, obj.targetLine);
             
