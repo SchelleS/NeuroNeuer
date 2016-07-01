@@ -21,8 +21,6 @@ classdef DVSfilter < handle
         
         function ballPos = calculateBallPositionWithFilter(obj, events)
             %filteredEvents = obj.filterBorder(events);
-            disp('size in calcposwithfilter');
-            disp(size(events))
             ballPos = obj.getBallPosition(events);
         end
         
@@ -36,13 +34,13 @@ classdef DVSfilter < handle
         % calculate ball position
         % may also return timestamp for velocity calculation
         function ballPos = getBallPosition(obj, filteredData)
-            
             % run dbscan 'on ON' data
             A=filteredData(filteredData(:,3)==1, 1:2);
+            %A=filteredData(:, 1:2);
             IDX=DBSCAN(A, obj.epsilon, obj.minPts);
-            clusterNumb = mode(IDX);
+            d
+            clusterNumb = 1;%mode(IDX);
             ballPos = mean(A(IDX==clusterNumb, :));
-            
         end
         
     end

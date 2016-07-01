@@ -26,7 +26,7 @@ classdef DVS < handle
             %obj.serial.WriteLine('!U=4000000'); 
             
             %data format
-            obj.serial.WriteLine('!E2');
+            obj.serial.WriteLine('!E0');
             pause(0.1);
             obj.serial.Flush();
             disp('DVS timestamp enabled');
@@ -51,26 +51,26 @@ classdef DVS < handle
             %TODO: check if Bytes Availible is always multible of 4
             %makes problem when not 4 bytes are returned see Mode 'E1'
             if (n>0)     
-                bytes2Read = n*4;
+                bytes2Read = n*2;
                 %TODO: For other modi g.E. 'E1'. Read all an buffer uncomplete 
                 eventBytes=obj.serial.Read(bytes2Read);
-                eventY=eventBytes(1:4:end);         % fetch every 2nd byte starting from 1st
-                eventX=eventBytes(2:4:end);         % fetch every 2nd byte starting from 2nd
+                eventY=eventBytes(1:2:end);         % fetch every 2nd byte starting from 1st
+                eventX=eventBytes(2:2:end);         % fetch every 2nd byte starting from 2nd
 
-                timeStamp = 256*eventBytes(3:4:end) + eventBytes(4:4:end);
+                %timeStamp = 256*eventBytes(3:4:end) + eventBytes(4:4:end);
 
                 % split data in polarity and y-events
                 eventP=eventX>127;
                 eventX=(eventX-(128*eventP));
 
                 eventY = eventY - 128;
-                events =[eventX eventY eventP timeStamp];
+                events =[eventX eventY eventP];% timeStamp];
             end % (n>3)
         end
         
         function events = eventsAvailable(obj)
             n=obj.serial.BytesAvailable();
-            events = floor(n/4);
+            events = floor(n/2);
         end
         
         function reset(obj)

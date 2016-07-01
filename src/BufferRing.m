@@ -15,7 +15,7 @@ classdef BufferRing < handle
             obj.buffer = [];
             obj.buffersize = buffersize;
             dummy = nan(buffersize,1);
-            obj.buffer = [dummy dummy dummy dummy];
+            obj.buffer = [dummy dummy dummy];
         end % BufferRing
         
         function Add(obj, newEvents)
@@ -25,7 +25,7 @@ classdef BufferRing < handle
             %if new events is bigger than buffer than copy only the newest
             %into buffer
             if a(1) >= obj.buffersize
-                obj.buffer = newEvents(a(1)-obj.buffersize+1:a(1), 1:4);
+                obj.buffer = newEvents(a(1)-obj.buffersize+1:a(1), 1:3);
             else
                 % later: do not copy double items
     %             for r = 1:a(1)
