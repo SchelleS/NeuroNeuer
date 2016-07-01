@@ -18,6 +18,7 @@ classdef NeuroNeuer < handle
         buffSize
         predictionLine
         targetLine
+        allowTraining
     end
     
     methods
@@ -25,15 +26,15 @@ classdef NeuroNeuer < handle
         function obj = NeuroNeuer()
             fclose(instrfind);
             
-            obj.dbrad = 10;
-            obj.dbcnt = 20;
-            obj.buffSize = 200;
-            obj.predictionLine = 15;
+            obj.dbrad = 7;
+            obj.dbcnt = 45;
+            obj.buffSize = 150;
+            obj.predictionLine = 20;
             obj.targetLine = 120;
-            
+            obj.allowTraining = 0;
             % set serial port names here
-            obj.dvsPort = 'com3';
-            obj.arduinoPort = 'com10';
+            obj.dvsPort = 'com7';
+            obj.arduinoPort = 'com6';
             
             obj.init();
             obj.connect();
@@ -52,7 +53,7 @@ classdef NeuroNeuer < handle
             obj.dvs = DVS(obj.dvsPort, 12000000);
             
             %init model
-            obj.model = Model(obj.dbrad, obj.dbcnt, obj.predictionLine, obj.targetLine, obj.arduinoPort);
+            obj.model = Model(obj.dbrad, obj.dbcnt, obj.predictionLine, obj.targetLine, obj.arduinoPort, obj.allowTraining);
             %init gui
             obj.gui = GUI(obj.predictionLine, obj.targetLine);
             
@@ -82,12 +83,13 @@ classdef NeuroNeuer < handle
                     if(obj.dvs.eventsAvailable())
                         events = obj.dvs.getEvents();
                         events = events(events(:,3)==1, 1:3);
-                        obj.buffer.Add(events)
+                        obj.buffer.Add(events);
                     end
                 end
                 %moveServoToPosition_value(obj.servo,rand);
                 el2 = toc(obj.start2);
                 if(el2>=0.0001)
+
                     obj.start2 = tic;
                     %display('fast stuff')
                     obj.model.updateBallPositionAndVelocity(obj.buffer.GetAll(), el2);
@@ -99,7 +101,7 @@ classdef NeuroNeuer < handle
                     %display('slow stuff')
                     if length(obj.model.newBallPos) == 2 && length(obj.model.ballVel) == 2
                         %update gui
-                        obj.gui.update(obj.buffer.GetAll(), obj.model.newBallPos, obj.model.ballVel, obj.model.ballPosForPrediction, obj.model.ballVelForPrediction, obj.model.ballPosForTarget, obj.model.ballVelForTarget);
+                        obj.gui.update(obj.buffer.GetAll(), obj.model.newBallPos, obj.model.ballVel*20, obj.model.ballPosForPrediction, obj.model.ballVelForPrediction*40, obj.model.ballPosForTarget, obj.model.predPixel);
                     end
                 end
 

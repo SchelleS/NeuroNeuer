@@ -8,7 +8,7 @@ classdef Model < handle
         oldBallPos
         newBallPos
         ballVel
-        list
+        velBuffer
         ballVelocityTemp
         predLine
         tarLine
@@ -17,13 +17,14 @@ classdef Model < handle
         ballVelForPrediction
         ballPosForTarget
         ballVelForTarget
-        
         positionPredicted
         targetPredicted
+        predPixel
+        allowTraining
     end
     
     methods
-        function obj = Model(dbrad, dbcnt, predictionLine, targetLine, ardPort)
+        function obj = Model(dbrad, dbcnt, predictionLine, targetLine, ardPort, aT)
             %init filter
             obj.filter = DVSfilter(dbrad, dbcnt);
             obj.neuralNet = NeuralNetwork();
@@ -32,11 +33,12 @@ classdef Model < handle
             obj.oldBallPos = [-1, -1];
             obj.newBallPos = [-1, -1];
             obj.ballVel = [0, 0];
-            obj.list = [0, 0];
+            obj.velBuffer = zeros(2, 2);
             obj.predLine = predictionLine;
             obj.tarLine = targetLine;
-            obj.eps = 5;
+            obj.eps = 12;
             obj.positionPredicted = 0;
+            obj.allowTraining = aT;
         end
         
         function updateBallPositionAndVelocity(obj, events, elapsed)
@@ -49,11 +51,14 @@ classdef Model < handle
                 obj.newBallPos = obj.filter.calculateBallPositionWithFilter(events);
                 obj.ballVelocityTemp = (obj.newBallPos - obj.oldBallPos)/(elapsed);
                 
-                obj.ballVel = obj.ballVelocityTemp;
+                %obj.velBuffer = [obj.ballVelocityTemp; obj.velBuffer(1:end-1, :)];
+                %mean2 = mean(obj.velBuffer,1);
+                obj.ballVel = obj.ballVelocityTemp / norm(obj.ballVelocityTemp);
                 
                 if length(obj.newBallPos) == 2 && length(obj.oldBallPos) == 2
                     
-                    if (obj.positionPredicted == 0 && obj.ballVel(2) > 0 && obj.newBallPos(2) < obj.predLine + obj.eps) && (obj.newBallPos(2) > obj.predLine - obj.eps)
+                    %if (obj.positionPredicted == 0 && obj.ballVel(2) > 0 && obj.newBallPos(2) < obj.predLine + obj.eps && obj.newBallPos(2) > obj.predLine - obj.eps)
+                     if (obj.ballVel(2) > 0 && obj.newBallPos(2) < obj.predLine + obj.eps && obj.newBallPos(2) > obj.predLine - obj.eps)
                         obj.ballPosForPrediction = obj.newBallPos;
                         obj.ballVelForPrediction = obj.ballVel;
                         obj.positionPredicted = 1;
@@ -64,9 +69,8 @@ classdef Model < handle
                         
                         disp(obj.neuralNet.getNumberTrained())
                         if obj.neuralNet.getNumberTrained()>1
-                            pixel = obj.neuralNet.evaluate([X;Y;dX;dY]);
-                            obj.servo.moveServoToPosition_pixel(pixel);
-                            disp(pixel)
+                            obj.predPixel = obj.neuralNet.evaluate([X;Y;dX;dY]);
+                            obj.servo.moveServoToPosition_pixel(obj.predPixel);
                         end
                         
                         %disp(obj.ballPosForPrediction)
@@ -81,27 +85,21 @@ classdef Model < handle
                         dX = obj.ballVelForPrediction(1);
                         dY = obj.ballVelForPrediction(2);
                         
+                        
                         dXTarget = obj.ballPosForTarget(1);
                         
                         obj.positionPredicted = 0;
                         
                         %add sample for training network
-                        obj.neuralNet.addSample(X, Y, dX, dY, dXTarget);
-                        obj.neuralNet.trainIt();
+                        if obj.allowTraining
+                            obj.neuralNet.addSample(X, Y, dX, dY, dXTarget);
+                            obj.neuralNet.trainIt();
+                        end
                         %disp(obj.ballPosForPrediction)
                     end
                     
                 end
-%                 if length(obj.newBallPos) == 2 && length(obj.oldBallPos) == 2
-%                     obj.list = vertcat(obj.list , obj.ballVelocityTemp);
-% 
-%                     if(length(obj.list)>10)
-%                         obj.list=obj.list(2:end, :);
-%                     end
-%                     disp('IM HEREEEEEEEE')
-%                     obj.ballVel = mean(obj.list);
-%                 end
-                
+
                 obj.oldBallPos = obj.newBallPos;
             end
 

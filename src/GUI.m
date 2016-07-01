@@ -5,6 +5,7 @@ classdef GUI < handle
         plt2
         plt3
         plt4
+        plt5
         pline
         tline
     end
@@ -19,13 +20,14 @@ classdef GUI < handle
            obj.plt = scatter([1 2], [1 2], 5, 'red');
            obj.plt2 = quiver(0,0,0,0);
            obj.plt3 = quiver(0,0,0,0);
-           obj.plt4 = quiver(0,0,0,0);
+           obj.plt4 = scatter(0, 0, 100, 'blue');
+           obj.plt5 = scatter(0, 0, 50, 'red');
            axis([-10, 138,-10,138]);
            xlabel('128-y')
            ylabel('128-x')
         end
         
-        function update(obj, events, ballPos, ballVel, ballPosForPred, ballVelForPred, ballPosForTar, ballVelForTar)
+        function update(obj, events, ballPos, ballVel, ballPosForPred, ballVelForPred, ballPosForTar, ballPosPredicted)
            %events = events(events(:,3)==1, 1:4);
            events(:,[1,2,3]) = events(:, [2,1,3]);
            events(:,1:2) = 128 - events(:,1:2);
@@ -46,11 +48,13 @@ classdef GUI < handle
                obj.plt3.UData = -ballVelForPred(2);
                obj.plt3.VData = -ballVelForPred(1);
            end
+           if length(ballPosPredicted) == 1
+               obj.plt5.XData = 20;
+               obj.plt5.YData = 128 - ballPosPredicted;
+           end
            if length(ballPosForTar) == 2
                obj.plt4.XData = 128 - ballPosForTar(2);
                obj.plt4.YData = 128 - ballPosForTar(1);
-               obj.plt4.UData = -ballVelForTar(2);
-               obj.plt4.VData = -ballVelForTar(1);
            end
            refreshdata;
         end

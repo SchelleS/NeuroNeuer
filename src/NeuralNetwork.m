@@ -11,7 +11,7 @@ classdef NeuralNetwork < handle
     
     methods
         function obj = NeuralNetwork()
-            hiddenLayerSize = 10;
+            hiddenLayerSize = 17;
             obj.net = fitnet(hiddenLayerSize);
             obj.net = init(obj.net);
             
